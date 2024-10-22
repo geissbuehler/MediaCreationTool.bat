@@ -459,6 +459,15 @@ EXIT
    cmd /d /x /c "(reg add $K /v EditionID /d $E /reg:64 /f & reg delete $K /v ProductName /reg:64 /f) >nul 2>nul"
  }
 
+#:: enable 11_24H2 installation on unsupported hardware
+ if (($env:PRESET -eq 'Auto Upgrade') -and ($env:VID -eq '11_24H2')) {
+   reg.exe delete "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\CompatMarkers" /f 2>&1>$null
+   reg.exe delete "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Shared" /f 2>&1>$null
+   reg.exe delete "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\TargetVersionUpgradeExperienceIndicators" /f 2>&1>$null
+   reg.exe add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\HwReqChk" /f /v HwReqChkVars /t REG_MULTI_SZ /s "," /d "SQ_SecureBootCapable=TRUE,SQ_SecureBootEnabled=TRUE,SQ_TpmVersion=2,SQ_RamMB=8192," 2>&1>$null
+   reg.exe add "HKLM\SYSTEM\Setup\MoSetup" /f /v AllowUpgradesWithUnsupportedTPMOrCPU /t REG_DWORD /d 1 2>&1>$null
+ }
+
 #:: setup file watcher to minimally track progress
  function Watcher {
    $A = $args; $Exe = $A[0]; $File = $A[1]; $Folder = $A[2]; $Subdirs = @($false,$true)[$A[3] -eq 'all']
