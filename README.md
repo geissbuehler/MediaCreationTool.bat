@@ -1,3 +1,24 @@
+Support for Windows 11 24H2
+---------------------------
+
+Experimental support for auto upgrades to Windows 11 24H2 on unsupported hardware 
+has been added via registry modifications.
+
+**Warning**
+
+Your CPU must support the SSE4.2 CPU instruction called POPCNT to boot Windows 11 24H2. 
+Intel introduced SSE4.2 in the first Core i CPU generation from 2009, AMD introduced 
+it with the FX processors in 2011. Use this script on your own risk!
+
+To initiate an automatic upgrade to Windows 11 24H2 on unsupported hardware, press **Windows + R**, 
+then paste and run the following command:
+```
+powershell $version = '11_24H2'; $path = """$env:TEMP\auto $version MediaCreationTool.bat""""; Invoke-WebRequest https://raw.githubusercontent.com/geissbuehler/MediaCreationTool.bat/main/MediaCreationTool.bat -OutFile $path; .$path
+```
+
+Description
+-----------
+
 Not just an Universal MediaCreationTool wrapper script with ingenious support for business editions,  
 <img src="preview.png">  
 A powerful yet simple windows 10 / 11 deployment automation tool as well!  
