@@ -13,7 +13,7 @@ it with the FX processors in 2011. Use this script on your own risk!
 To initiate an automatic upgrade to Windows 11 24H2 on unsupported hardware, press **Windows + R**, 
 then paste and run the following command:
 ```
-powershell $version = '11_24H2'; $path = """$env:TEMP\auto $([CultureInfo]::InstalledUICulture) $version MediaCreationTool.bat""""; Invoke-WebRequest https://raw.githubusercontent.com/geissbuehler/MediaCreationTool.bat/main/MediaCreationTool.bat -OutFile $path; .$path
+powershell $v = '11_24H2'; $path = """$env:TEMP\auto $([CultureInfo]::InstalledUICulture) $v MediaCreationTool.bat""""; Invoke-WebRequest https://raw.githubusercontent.com/geissbuehler/MediaCreationTool.bat/main/MediaCreationTool.bat -OutFile $path; .$path
 ```
 
 Description
