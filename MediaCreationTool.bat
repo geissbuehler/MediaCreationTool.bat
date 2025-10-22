@@ -47,9 +47,9 @@ set /a UNHIDE_BUSINESS=1
 ::# comment to not insert Enterprise esd links for 1607,1703 or update links for 1909,2004,20H2,21H2,22H2,11_21H2,11_22H2,11_23H2,11_24H2 in products.xml
 set /a INSERT_BUSINESS=1
 
-::# MCT Version choice dialog items and default-index [11_24H2]
-set VERSIONS=1507,1511,1607,1703,1709,1803,1809,1903,1909,20H1,20H2,21H1,21H2,22H2,11_21H2,11_22H2,11_23H2,11_24H2
-set /a dV=17
+::# MCT Version choice dialog items and default-index [11_25H2]
+set VERSIONS=1507,1511,1607,1703,1709,1803,1809,1903,1909,20H1,20H2,21H1,21H2,22H2,11_21H2,11_22H2,11_23H2,11_24H2,11_25H2
+set /a dV=19
 
 ::# MCT Preset choice dialog items and default-index [Select in MCT]
 set PRESETS=^&Auto Upgrade,Auto ^&ISO,Auto ^&USB,^&Select,MCT ^&Defaults
@@ -66,7 +66,7 @@ set "OS_ARCH=x64" & if "%PROCESSOR_ARCHITECTURE:~-2%" equ "86" if not defined PR
 
 ::# parse MCT choice from script name or commandline - accepts both formats: 1909 or 19H2 etc.
 for %%V in (1.1507 2.1511 3.1607 4.1703 5.1709 6.1803 7.1809 8.1903 8.19H1 9.1909 9.19H2 10.2004 10.20H1 11.2009 11.20H2 12.2104
- 12.21H1 13.2109 13.21H2 14.2210 14.22H2 15.2110 15.11_21H2 16.2209 16.11_22H2 17.2310 17.11_23H2 18.2409 18.11_24H2) do for %%s in (%MCT% %~n0 %*) do if /i %%~xV equ .%%~s set "MCT=%%~nV" & set "VID=%%~s"
+ 12.21H1 13.2109 13.21H2 14.2210 14.22H2 15.2110 15.11_21H2 16.2209 16.11_22H2 17.2310 17.11_23H2 18.2409 18.11_24H2 19.11_25H2) do for %%s in (%MCT% %~n0 %*) do if /i %%~xV equ .%%~s set "MCT=%%~nV" & set "VID=%%~s"
 if defined MCT if not defined VID set "MCT="
 
 ::# parse AUTO from script name or commandline - starts unattended upgrade / in-place repair / cross-edition
@@ -141,6 +141,13 @@ if %MCT%0 lss 1 if %PRE%0 gtr 1 call :choices MCT "%VERSIONS%" %dV% "MCT Version
 if %MCT%0 gtr 1 if %PRE%0 lss 1 call :choices PRE "%PRESETS%"  %dP% "MCT Preset"  11 white 0x005a9e 320
 if %MCT%0 gtr 1 if %PRE%0 lss 1 goto choice-0 = cancel
 goto choice-%MCT%
+
+:choice-19
+set "VER=26200" & set "VID=11_25H2" & set "CB=26200.6899.251011-1532.25h2_ge_release_svc_refresh" & set "CT=2025/10/" & set "CC=2.1"
+:: as workaround for the missing CAB file URL, a products.xml has been added that was downloaded with MediaCreationTool.exe
+set "XML=https://raw.githubusercontent.com/geissbuehler/MediaCreationTool.bat/hack25h2/products.xml"
+set "EXE=https://download.microsoft.com/download/4e211187-7e51-429a-a93f-5bf9a77ad77e/MediaCreationTool.exe"
+goto process ::# windows 11 25H2
 
 :choice-18
 set "VER=26100" & set "VID=11_24H2" & set "CB=26100.2033.241004-2336.ge_release_svc_refresh" & set "CT=2024/10/" & set "CC=2.0"
@@ -369,6 +376,7 @@ if %VER% geq 22000 (set X=11& set VIS=21H2) else (set X=10& set VIS=%VID%)
 if %VER% geq 22621 (set X=11& set VIS=22H2)
 if %VER% geq 22631 (set X=11& set VIS=23H2)
 if %VER% geq 26100 (set X=11& set VIS=24H2)
+if %VER% geq 26200 (set X=11& set VIS=25H2)
 
 ::# refresh screen
 cls & <"%~f0" (set /p _=&for /l %%s in (1,1,20) do set _=& set/p _=& call echo;%%_%%)
@@ -459,8 +467,8 @@ EXIT
    cmd /d /x /c "(reg add $K /v EditionID /d $E /reg:64 /f & reg delete $K /v ProductName /reg:64 /f) >nul 2>nul"
  }
 
-#:: enable 11_24H2 installation on unsupported hardware
- if (($env:PRESET -eq 'Auto Upgrade') -and ($env:VID -eq '11_24H2')) {
+#:: enable Windows 11 installation on unsupported hardware via registry modifications
+ if ($env:X -eq '11') {
    reg.exe delete "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\CompatMarkers" /f 2>&1>$null
    reg.exe delete "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Shared" /f 2>&1>$null
    reg.exe delete "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\TargetVersionUpgradeExperienceIndicators" /f 2>&1>$null
@@ -1023,7 +1031,7 @@ function PRODUCTS_XML { [xml]$xml = [io.file]::ReadAllText("$pwd\products.xml",[
      }}}
    }
  }
-#:: update existing FilePath entries for 1909, 2004, 2008 and insert entries for 21H2, 22H2, 11_21H2, 11_22H2, 11_23H2 and 11_23H2
+#:: update existing FilePath entries for 1909, 2004, 2008 and insert entries for 21H2, 22H2, 11_21H2, 11_22H2, 11_23H2, 11_24H2 and 11_25H2
  if ($insert -and $ver -gt 15063) {
    $items = $csv |group Client,Lang -AsHashTable -AsString
    if ($null -ne $items) {

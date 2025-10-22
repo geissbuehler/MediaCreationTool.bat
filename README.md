@@ -1,20 +1,27 @@
-Support for Windows 11 24H2
----------------------------
+Automatic upgrade to Windows 11 on unsupported hardware
+-------------------------------------------------------
 
-Experimental support for auto upgrades to Windows 11 24H2 on unsupported hardware 
-has been added via registry modifications.
+This script allows automatic upgrades from Windows 10 to Windows 11 or from older Windows 11 
+releases to new Windows 11 releases on unsupported hardware. Registry modifications are applied to 
+unblock the update, also on hardware that officially supports Windows 11.
 
 **Warning**
 
-Your CPU must support the SSE4.2 CPU instruction called POPCNT to boot Windows 11 24H2. 
-Intel introduced SSE4.2 in the first Core i CPU generation from 2009, AMD introduced 
-it with the FX processors in 2011. Use this script on your own risk!
+Your CPU must support the SSE4.2 CPU instruction called POPCNT to boot Windows 11 24H2 or newer. 
+Intel introduced SSE4.2 in the first Core i CPU generation from 2009, AMD introduced it with the 
+FX processors in 2011. The Windows setup will abort the update if the CPU does not support these 
+instructions and this limitation cannot be bypassed. Use this script on your own risk!
 
-To initiate an automatic upgrade to Windows 11 24H2 on unsupported hardware, press **Windows + R**, 
+To initiate an automatic upgrade to Windows 11 25H2 on unsupported hardware, press **Windows + R**, 
 then paste and run the following command:
 ```
-powershell $v = '11_24H2'; $path = """$env:TEMP\auto $([CultureInfo]::InstalledUICulture) $v MediaCreationTool.bat""""; Invoke-WebRequest https://raw.githubusercontent.com/geissbuehler/MediaCreationTool.bat/main/MediaCreationTool.bat -OutFile $path; .$path
+powershell $v = '11_25H2'; $f = """$env:TEMP\auto $([CultureInfo]::InstalledUICulture) $v MediaCreationTool.bat""""; Invoke-WebRequest https://raw.githubusercontent.com/geissbuehler/MediaCreationTool.bat/hack25h2/MediaCreationTool.bat -OutFile $f; .$f
 ```
+
+Except for a User Account Control prompt requesting administrator privileges, this update command 
+executes the update process automatically without any additional user input. Make sure to not 
+interact with your computer until the save dialog for the ISO file appeared. The script may stall 
+if the Windows setup window does not remain in focus during this step.
 
 Description
 -----------
